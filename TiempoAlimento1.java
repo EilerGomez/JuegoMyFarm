@@ -3,9 +3,11 @@ public class TiempoAlimento1 extends Thread{
     public int contador;
     public static boolean muerto = false;
     JLabel animalCreciendo;
+    JLabel pollosCreciendo;
 
-    public TiempoAlimento1(JLabel animalCreciendo){
+    public TiempoAlimento1(JLabel animalCreciendo, JLabel pollosCreciendo){
         this.animalCreciendo = animalCreciendo;
+        this.pollosCreciendo=pollosCreciendo;
     }
     public void run(){
         for(int i=30; i>=0; i--){
@@ -19,6 +21,7 @@ public class TiempoAlimento1 extends Thread{
         }
         if(contador==0){
             CriarGallinas.cantidadGallinasCriando=0;
+            pollosCreciendo.setVisible(false);
             JOptionPane.showMessageDialog(null, "Las gallinas han muerto de hambre");
             muerto=true;
             animalCreciendo.setText("");

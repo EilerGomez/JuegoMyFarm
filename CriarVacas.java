@@ -4,14 +4,16 @@ public class CriarVacas extends Thread{
     public static double vidaVaca;
     public double contador;
     javax.swing.JLabel vacasCreciendo;
+    JLabel vacasCriando;
     TiempoAlimentar alimentoVaca;
     public static Thread hilovacaAlimento;
 
-    public CriarVacas(javax.swing.JLabel vacasCreciendo){
+    public CriarVacas(javax.swing.JLabel vacasCreciendo, JLabel vacasCriando){
         this.vacasCreciendo = vacasCreciendo;
+        this.vacasCriando= vacasCriando;
     }
     public void run(){
-        alimentoVaca = new TiempoAlimentar(this.vacasCreciendo);
+        alimentoVaca = new TiempoAlimentar(this.vacasCreciendo, this.vacasCriando);
         hilovacaAlimento = new Thread(alimentoVaca);
         for(int i=0; i<=50; i++){
             contador++;
