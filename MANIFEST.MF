@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: Eiler Gómez
+Main-Class: Bienvenida
+X-COMMENT: Desarrollado en USAC Proyecto IPC1 by Eiler Gómez

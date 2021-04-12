@@ -60,6 +60,11 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         TiempoVida tmv;
         Thread hiloTiempo;
     ///
+    //variables para sembrar plantas
+        Cosecha1 cosechamanzan;
+        Thread hilosembrar2;
+        Thread hilosembrar1;
+    ///
     Inicio in = new Inicio();
     Pesca pesca;
     Pesca pesca1;
@@ -627,6 +632,15 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         aceptarFuncionEnCasa.setForeground(new Color(255,255,255));
         add(aceptarFuncionEnCasa);
         aceptarFuncionEnCasa.addActionListener(this);
+
+//
+//hilos de plantas
+        Cosecha cosechamaiz = new Cosecha();
+        cosechamaiz.recibeJlabelYCantidadplantas(plantasCreciendo,tipplanta, cantidadplantassembrar, maizPlantado, maizCosechado, contadorLimpieza, celdamaiz, celdaSembrarMaiz);
+        hilosembrar1= new Thread(cosechamaiz);
+
+        cosechamanzan = new Cosecha1(plantasCreciendo1,tipplanta1, cantidadplantassembrar, manzanasPlantado, manzanaCosechado, hilosembrar2, contadorLimpieza);
+        hilosembrar2= new Thread(cosechamanzan);
 //
     
 //Mercado
@@ -991,17 +1005,6 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         //
 
-
-        // los hilos de maiz y manzana
-            Cosecha cosechamaiz = new Cosecha();
-            cosechamaiz.recibeJlabelYCantidadplantas(plantasCreciendo,tipplanta, cantidadplantassembrar, maizPlantado, maizCosechado);
-            Thread hilosembrar1= new Thread(cosechamaiz);
-
-            Cosecha1 cosechamanzan = new Cosecha1(plantasCreciendo1,tipplanta1, cantidadplantassembrar, manzanasPlantado, manzanaCosechado);
-            Thread hilosembrar2= new Thread(cosechamanzan);
-        //
-        
-        
     //para pescar
         pesca = new Pesca();
         pesca.recibeJLabel(pezenagua, pescados);
@@ -1314,12 +1317,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                 if(Cosecha.cosechaMaiz<=0){
                     JOptionPane.showMessageDialog(null, "No hay maiz suficiente para cosechar, asegurese de haber plantado");
                 }else{
+                    Cosecha.hiloCosechamaiz.stop();
                     Cosecha.maizquintales = (Cosecha.maizquintales+ (Cosecha.cosechaMaiz))+ (Cosecha.aumentoMaiz*(Cosecha.cosechaMaiz*celdamaiz));
                     Cosecha.maizquintales = Math.round(Cosecha.maizquintales*100.0)/100.0;
                     maizCosechado.setVisible(false);
                     maiz.setText("maiz(qq): " + Cosecha.maizquintales);
                     Reportes.maizGranja=(Reportes.maizGranja+Cosecha.cosechaMaiz)+(Cosecha.aumentoMaiz*Cosecha.cosechaMaiz*celdamaiz);
-                   Reportes.maizGranja=Math.round(Reportes.maizGranja*100.0)/100.0;
+                    Reportes.maizGranja=Math.round(Reportes.maizGranja*100.0)/100.0;
                     Reportes.tortillas1.setText("maiz: " + Reportes.maizGranja);
                     celdamaiz=0;
                     celdaSembrarMaiz = celdamaiz;
@@ -1334,8 +1338,6 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     JOptionPane.showMessageDialog(null, "No hay suficientes manzanas, espera a que puedan crecer");
                 }
                 else{
-                    manzanaCosechado.setVisible(false);
-                    manzanasPlantado.setVisible(true);
                     Cosecha1.manzanasquintales = (Cosecha1.manzanasquintales + (Cosecha1.cosechaManzana)) + (Cosecha1.aumentoManzanas*(Cosecha1.cosechaManzana*celdamanzana));
                     Cosecha1.manzanasquintales = Math.round(Cosecha1.manzanasquintales*100.0)/100.0;
                     manzanasqq.setText("manzanas(qq): " + Cosecha1.manzanasquintales);
@@ -1343,8 +1345,10 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Reportes.manzanas1.setText("mnz: " + Reportes.manzanasGranja);
                     Cosecha1.cosechaManzana=0;
                     vidaManzanas++;
+                    Cosecha1.hiloCosechamanzan.stop();
+                    manzanaCosechado.setVisible(false);
+                    manzanasPlantado.setVisible(true);
                     hilosembrar2.start();
-
                 }
             }else if(tipplanta.equals("Aplicar Multifert")){
                 if(multf<cantidadplantassembrar){
@@ -2015,6 +2019,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
          else if(e.getSource()==miReportes){
              TerminosYCondiciones.rp.setVisible(true);
          }else if(e.getSource()==miNuveaPartida){
+
             NuevaPartida np = new NuevaPartida();
             np.setBounds(0,0,500,350);
             np.setVisible(true);
@@ -2083,6 +2088,11 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
             Reportes.txtArea.setText(Reportes.txtArea.getText()+"\n"+Reportes.numPartidas[Reportes.contadorPatidas]);
             TiempoPartida.tiempoPartida=0;
             Reportes.contadorPatidas++;
+
+            this.hilosembrar1.stop();
+            this.hilosembrar2.stop();
+            Cosecha.hiloCosechamaiz.stop();
+            Cosecha1.hiloCosechamanzan.stop();
 
             contadorHilos=0;
             tiempoVida[contadorHilos].start();
