@@ -1,0 +1,9 @@
+//para crear un jar de mi juego, estas son las imagenes:
+jar cvfm MyFarm1.1.jar manifest.mf Bienvenida.class TerminosYCondiciones.class VentanaMenu.class 
+Cosecha.class Cosecha1.class CriarGallinas.class CriarVacas.class Inicio.class Jugador.class
+ NuevaPartida.class Pesca.class Reportes.class TiempoAlimentar.class TiempoAlimento1.class 
+ TiempoPartida.class TiempoCosecha.class TiempoCosecha1.class TiempoVida.class images/Agua1.png 
+ images/Cerezo.webp images/Desierto1.jpg images/fondo.jpg images/gallinaCreciendo.PNG 
+ images/gallinaGrande.PNG images/Grama.png images/Granjero.jpg images/icono,logo.jpg images/LOGO.jpg 
+ images/maizcosechar.jpg images/maizPlantando.jpg images/manzanCosechar.PNG images/mm.PNG images/partida.jpg
+  images/pesca.png images/Reportes.jpg images/vacasCreciendo.PNG images/vacasGrandes.PNG
