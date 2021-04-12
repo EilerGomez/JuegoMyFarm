@@ -15,16 +15,16 @@ public class CriarVacas extends Thread{
     public void run(){
         alimentoVaca = new TiempoAlimentar(this.vacasCreciendo, this.vacasCriando);
         hilovacaAlimento = new Thread(alimentoVaca);
-        for(int i=0; i<=50; i++){
+        for(int i=0; i<=70; i++){
             contador++;
             vacasCreciendo.setText("Vacas Creciendo: " + contador);
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (Exception e) {
                 System.out.println("Error en el hilo de criar vacas " + e);
             }
         }
-        if(contador>50){
+        if(contador>70){
             hilovacaAlimento.start();
             JOptionPane.showMessageDialog(null, "Hora de alimentar a las vacas");
             vacasCreciendo.setText("");

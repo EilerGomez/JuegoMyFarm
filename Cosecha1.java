@@ -20,15 +20,15 @@ public class Cosecha1 extends Thread{
     }
     public void run(){
         contador=0;
-        for(int i = 0; i<=100; i++){
+        for(int i = 0; i<=50; i++){
             plantasCreciendo1.setText("creciendo..." + contador++);
             try {
-                Thread.sleep(100);  
+                Thread.sleep(1000);  
             } catch (Exception e) {
               System.out.println("Error en el hilo " + e);
             }
         }
-        if(contador>99){
+        if(contador>49){
                 cosechaManzana=cantidadplantassembrar*1;
                 manzanasPlantado.setVisible(false);
                 manzanaCosechado.setVisible(true);

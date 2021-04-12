@@ -10,6 +10,7 @@ public class TerminosYCondiciones extends JFrame implements ActionListener, Chan
     private JTextArea textArea1;
     private JScrollPane scroll1;
     String nombre = "";
+    public static Reportes rp = new Reportes();
 
     public TerminosYCondiciones (){
         setLayout(null);
@@ -19,6 +20,11 @@ public class TerminosYCondiciones extends JFrame implements ActionListener, Chan
         setIconImage(new ImageIcon(getClass().getResource("images/icono,logo.jpg")).getImage());
         Jugador jugador = new Jugador();
         nombre = jugador.nombre;
+
+            rp.setBounds(0,0,500,500);
+            rp.setResizable(false);
+            rp.setVisible(false);
+            rp.setLocationRelativeTo(null);
 
         etiqueta1 = new JLabel("TERMINOS Y CONDICIONES");
         etiqueta1.setBounds(215,5,200,30);
@@ -90,13 +96,18 @@ public class TerminosYCondiciones extends JFrame implements ActionListener, Chan
 
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==boton1){
-          
+          VentanaMenu vM = new VentanaMenu();
+          vM.setBounds(0,0,1400,735);
+          vM.setVisible(true);
+          vM.setResizable(false);
+          this.setVisible(false);
         }else if(e.getSource()==boton2){
             Bienvenida vb = new Bienvenida();
             vb.setBounds(0,0,400,450);
             vb.setVisible(true);
             vb.setResizable(false);
             vb.setLocationRelativeTo(null);
+
             this.setVisible(false);
         }
     }

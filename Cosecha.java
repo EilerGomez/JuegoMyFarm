@@ -16,15 +16,15 @@ public class Cosecha extends Thread{
     }
     public void run(){
         contador=0;
-        for(int i = 0; i<=100; i++){
+        for(int i = 0; i<=55; i++){
             plantasCreciendo.setText("creciendo..." + contador++);
             try {
-                Thread.sleep(100);  
+                Thread.sleep(1000);  
             } catch (Exception e) {
               System.out.println("Error en el hilo " + e);
             }
         }
-        if(contador>100){
+        if(contador>54){
                 cosechaMaiz = cantidadplantassembrar*0.05;
                 maizPlantado.setVisible(false);
                 maizCosechado.setVisible(true);

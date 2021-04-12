@@ -9,17 +9,18 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
     private JLabel semm,semM, venderProductos, VentaComidaAnimales, cantComidaAM, fertTerreno,  cantFRT, sembrarPlantas, plantasCreciendo;
     private JLabel cantPlantas, plantasCreciendo1, maizPlantado, manzanasPlantado, maizCosechado, manzanaCosechado, pescados, criarAnimales, vacasCreciendo;
     private JLabel gallinasCreciendo, cantidadAnimales, comprarCrias, cantidadCrias, criandoVacas, criandoGallinas, vacasCriando;
-    private JLabel vacasGrandes, pollosCreciendo, gallinasGrandes;
+    private JLabel vacasGrandes, pollosCreciendo, gallinasGrandes, enLaGranja, cantidadComidaGrangero, tuVida, tiempoPartida, bienvenido, fondo, granjer;
     private JTextField field[] = new JTextField[25];
     private JTextField misPeces, maiz, oro, puntaje, semMaiz, semManzana, cantSemillas, cantVenta, cantComidaAnimal, cantFertilizante, cantPlantaSembrar;
     private JTextField manzanasqq, multifert, gallinasa, fungisidas, cantAnimals, criasVacas, criasGallinas, cantCrias, gallinas, vacas, trigoqq, afrechoqq, pastoqq;
-    private JTextField lechelt, huevosU, cueroVaca, carneDeVaca, carneDeGallina; 
+    private JTextField lechelt, huevosU, cueroVaca, carneDeVaca, carneDeGallina, cantidadAlimentoGrangero; 
     private JMenuBar barra;
     private JButton aceptarAgua, aceptarBote, aceptarSemillas, aceptarVenta, comprarComidaAnimal, comprarFertilizante, aceptarSiembra;
-    private JButton aceptarCosechar, aceptarAnimal, AceptarCriarAnimal, aceptarCompraCrias;
-    private JMenu opciones;
+    private JButton aceptarCosechar, aceptarAnimal, AceptarCriarAnimal, aceptarCompraCrias, aceptarFuncionEnCasa;
+    private JMenu opciones, nuevo, acercaDe,mFondo;
+    private JMenuItem miAcercaDe, miNuveaPartida, miRojo, miMorado, miNegro, miAzul, miReportes, salir ;
     private JComboBox comboAgua, comboSemillas, comboVenta, comidaAnimalesV, comidaAnimalesG, tipoAnimal, fertilizante, tipoPlanta, celdas, animalCriar, funcionAnimal, parcelaAnimal;
-    private JComboBox comboCria, comboAlimentoHervivoro, comboAlimentoOmnivoro;
+    private JComboBox comboCria, comboAlimentoHervivoro, comboAlimentoOmnivoro, comboFuncionCasa, comboAlimentoGrangero;
     private String barco1 = "<===>";
     private String barco2 = "<==T==>";
     //variables para cosechar y sembrar
@@ -53,6 +54,12 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         int contadorCrecimientoVaca;
         int contadorCrecimientoGall;
     ///
+    //variables para la vida del granjero
+        Thread tiempoVida[] = new Thread[10000];
+        int contadorHilos=0;
+        TiempoVida tmv;
+        Thread hiloTiempo;
+    ///
     Inicio in = new Inicio();
     Pesca pesca;
     Pesca pesca1;
@@ -65,6 +72,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
     
     public VentanaMenu(){
         setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Ventana Pricipal");
         getContentPane().setBackground(new Color(62,95,138));
         setIconImage(new ImageIcon(getClass().getResource("images/icono,logo.jpg")).getImage());
@@ -84,7 +92,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         etiqueta1 = new JLabel("Tu Granja");
         etiqueta1.setBounds(190,5,90,25);
         etiqueta1.setFont(new Font("Andale Mono", 1, 18));
-        etiqueta1.setForeground(new Color(255,255,255));
+        etiqueta1.setForeground(new Color(0,0,0));
         add(etiqueta1);
 
         etiqueta2 = new JLabel("Parcelas de Agua: " + in.contadorAgua);
@@ -192,17 +200,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                 pescados = new JLabel(new ImageIcon("images/pesca.PNG"));
                 pescados.setBounds(10,405,165,75);
                 pescados.setVisible(false);
-                add(pescados);
-                
-             
-               
-               
+                add(pescados);            
         
     //Bodega
         bodega = new JLabel("BODEGA ");
         bodega.setBounds(1130,5,150,25);
         bodega.setFont(new Font("Andale Mono", 1, 16));
-        bodega.setForeground(new Color(255,255,0));
+        bodega.setForeground(new Color(0,255,0));
         add(bodega);
 
         misPeces = new JTextField("Peces: 0");
@@ -568,14 +572,69 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         gallinasGrandes.setBounds(525,470,140,180);
         gallinasGrandes.setVisible(false);
         add(gallinasGrandes);
+// alimentar al grangero, estazar vacas, gallinas, etc
+        comboFuncionCasa= new JComboBox();
+        comboFuncionCasa.setBounds(680,560,160,25);
+        comboFuncionCasa.setBackground(new java.awt.Color(0,70,255));
+        comboFuncionCasa.setFont(new java.awt.Font("Georgia", 1, 12));
+        comboFuncionCasa.setForeground(new java.awt.Color(255,255,255));
+        add(comboFuncionCasa);
+        comboFuncionCasa.addActionListener(this);
+        comboFuncionCasa.addItem("");
+        comboFuncionCasa.addItem("Destazar Vaca");
+        comboFuncionCasa.addItem("Destazar Gallina");
+        comboFuncionCasa.addItem("Comer (Granjero)");
+
+        comboAlimentoGrangero= new JComboBox();
+        comboAlimentoGrangero.setBounds(740,590,100,25);
+        comboAlimentoGrangero.setBackground(new java.awt.Color(136,0,255));
+        comboAlimentoGrangero.setFont(new java.awt.Font("Georgia", 1, 12));
+        comboAlimentoGrangero.setForeground(new java.awt.Color(255,255,255));
+        add(comboAlimentoGrangero);
+        comboAlimentoGrangero.addActionListener(this);
+        comboAlimentoGrangero.setVisible(false);
+        comboAlimentoGrangero.addItem("");
+        comboAlimentoGrangero.addItem("Peces");
+        comboAlimentoGrangero.addItem("Tortillas");
+        comboAlimentoGrangero.addItem("Carne Vaca");
+        comboAlimentoGrangero.addItem("Carne Gallina");
+        comboAlimentoGrangero.addItem("Manzanas");
+        comboAlimentoGrangero.addItem("Leche");
+        comboAlimentoGrangero.addItem("Huevos");
+
+        enLaGranja = new JLabel("EN TU CASA");
+        enLaGranja.setBounds(680,525,300,30);
+        enLaGranja.setFont(new Font("Castellar", 1, 18));
+        enLaGranja.setForeground(new Color(255,0,0));
+        add(enLaGranja);
+
+        cantidadComidaGrangero=new JLabel("Cantidad");
+        cantidadComidaGrangero.setBounds(680,579,90,25);
+        cantidadComidaGrangero.setForeground(new Color(0,0,0));
+        add(cantidadComidaGrangero);
+
+        cantidadAlimentoGrangero = new JTextField("");
+        cantidadAlimentoGrangero.setBounds(680,598,58,20);
+        cantidadAlimentoGrangero.setFont(new Font("Lucida Console", 1, 12));
+        cantidadAlimentoGrangero.setBackground(new Color(0,90,255));
+        cantidadAlimentoGrangero.setForeground(new Color(255,255,255));
+        add(cantidadAlimentoGrangero);
+
+        aceptarFuncionEnCasa = new JButton("Aceptar");
+        aceptarFuncionEnCasa.setBounds(725,620,90,30);
+        aceptarFuncionEnCasa.setFont(new Font("Time New Roman", 0, 12));
+        aceptarFuncionEnCasa.setBackground(new Color(0,0,0));
+        aceptarFuncionEnCasa.setForeground(new Color(255,255,255));
+        add(aceptarFuncionEnCasa);
+        aceptarFuncionEnCasa.addActionListener(this);
 //
     
 //Mercado
     //comprar semillas.
         mercado = new JLabel("MERCADO ");
         mercado.setBounds(1150,392,150,25);
-        mercado.setFont(new Font("Andale Mono", 1, 16));
-        mercado.setForeground(new Color(0,255,0));
+        mercado.setFont(new Font("Stencil", 0, 16));
+        mercado.setForeground(new Color(0,0,255));
         add(mercado);
 
         comboSemillas = new JComboBox();
@@ -590,7 +649,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         comprarSemillas = new JLabel("comprar semillas");
         comprarSemillas.setBounds(1050,419,110,25);
-        comprarSemillas.setForeground(new Color(0,255,0));
+        comprarSemillas.setForeground(new Color(0,0,0));
         add(comprarSemillas);
 
         aceptarSemillas = new JButton("Comprar");
@@ -610,7 +669,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         semm= new JLabel("Cantidad");
         semm.setBounds(1050,460,80,30);
-        semm.setForeground(new Color(0,255,0));
+        semm.setForeground(new Color(0,0,0));
         add(semm);
     //Vender productos
 
@@ -634,12 +693,12 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
 	  venderProductos = new JLabel("Vender Productos");
 	  venderProductos.setBounds(1200,419,110,25);
-	  venderProductos.setForeground(new Color(0,255,0));
+	  venderProductos.setForeground(new Color(0,0,0));
 	  add(venderProductos);
 
 	  semM= new JLabel("Cantidad");
 	  semM.setBounds(1200,460,80,30);
-	  semM.setForeground(new Color(0,255,0));
+	  semM.setForeground(new Color(0,0,0));
 	  add(semM);
 
 	  cantVenta = new JTextField("");
@@ -660,7 +719,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
     //comprar comida para los animales
        VentaComidaAnimales = new JLabel("Comida para animales");
        VentaComidaAnimales.setBounds(1050,512, 150,25);
-       VentaComidaAnimales.setForeground(new Color(0,255,0));
+       VentaComidaAnimales.setForeground(new Color(0,0,0));
        add(VentaComidaAnimales);
 
         comidaAnimalesV = new JComboBox();
@@ -705,7 +764,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         cantComidaAM = new JLabel("Cantidad");
         cantComidaAM.setBounds(1050,582,90,25);
-        cantComidaAM.setForeground(new Color(0,255,0));
+        cantComidaAM.setForeground(new Color(0,0,0));
         add(cantComidaAM);
 
         comprarComidaAnimal = new JButton("Comprar");
@@ -718,7 +777,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
     // fertilizantes para la tierra
        fertTerreno = new JLabel("Fertilizantes, terreno");
        fertTerreno.setBounds(1200,512, 150,25);
-       fertTerreno.setForeground(new Color(0,255,0));
+       fertTerreno.setForeground(new Color(0,0,0));
        add(fertTerreno);
 
         fertilizante = new JComboBox();
@@ -741,7 +800,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         cantFRT = new JLabel("Cantidad");
         cantFRT.setBounds(1200,557,90,25);
-        cantFRT.setForeground(new Color(0,255,0));
+        cantFRT.setForeground(new Color(0,0,0));
         add(cantFRT);
 
         comprarFertilizante = new JButton("Comprar");
@@ -755,7 +814,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
     //comprar crias de animales
         comprarCrias = new JLabel("Crias y Animales");
         comprarCrias.setBounds(890,540, 200,25);
-        comprarCrias.setForeground(new Color(0,255,0));
+        comprarCrias.setForeground(new Color(0,0,0));
         add(comprarCrias);
 
         comboCria = new JComboBox();
@@ -785,7 +844,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
         cantidadCrias = new JLabel("Cantidad");
         cantidadCrias.setBounds(890,582,90,20);
-        cantidadCrias.setForeground(new Color(0,255,0));
+        cantidadCrias.setForeground(new Color(0,0,0));
         add(cantidadCrias);
 
     
@@ -796,23 +855,126 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
 
        opciones = new JMenu("Opciones");
        opciones.setBackground(new Color(255,0,0));
-       opciones.setFont(new Font("Time New Roman", 1,14));
+       opciones.setFont(new Font("Georgia", 1,14));
        opciones.setForeground(new Color(0,0,0));
        barra.add(opciones);
 
+       miReportes= new JMenuItem("Reportes");
+       miReportes.setFont(new Font("Georgia", 1,14));
+       miReportes.setForeground(new Color(0,0,0));
+       opciones.add(miReportes);
+       miReportes.addActionListener(this);
+
+       mFondo = new JMenu("Fondo");
+       mFondo.setFont(new Font("Georgia", 1, 14));
+       mFondo.setForeground(new Color(0,0,0));
+       opciones.add(mFondo);
+
+       //colores
+        miRojo = new JMenuItem("Rojo");
+        miRojo.setFont(new Font("Georgia", 1, 14));
+        miRojo.setForeground(new Color(255,0,0));
+        mFondo.add(miRojo);
+        miRojo.addActionListener(this);
+
+        miNegro = new JMenuItem("Negro");
+        miNegro.setFont(new Font("Georgia", 1, 14));
+        miNegro.setForeground(new Color(0,0,0));
+        mFondo.add(miNegro);
+        miNegro.addActionListener(this);
+
+        miMorado = new JMenuItem("Morado");
+        miMorado.setFont(new Font("Georgia", 1, 14));
+        miMorado.setForeground(new Color(87,35,100));
+        mFondo.add(miMorado);
+        miMorado.addActionListener(this);
+
+        miAzul = new JMenuItem("Azul");
+        miAzul.setFont(new Font("Georgia", 1, 14));
+        miAzul.setForeground(new Color(62,95,138));
+        mFondo.add(miAzul);
+        miAzul.addActionListener(this);
+    //
+       nuevo = new JMenu("Nuevo");
+       nuevo.setBackground(new Color(255,0,0));
+       nuevo.setFont(new Font("Georgia",1,14));
+       nuevo.setForeground(new Color(0,0,0));
+       barra.add(nuevo);
+
+       miNuveaPartida = new JMenuItem("Partida");
+       miNuveaPartida.setFont(new Font("Georgia", 1, 14));
+       miNuveaPartida.setForeground(new Color(0,0,0));
+       nuevo.add(miNuveaPartida);
+       miNuveaPartida.addActionListener(this);
+
+       acercaDe = new JMenu("Acerca de");
+       acercaDe.setBackground(new Color(255,0,0));
+        acercaDe.setFont(new Font("Georgia",1,14));
+       acercaDe.setForeground(new Color(0,0,0));
+       barra.add(acercaDe);
+
+       miAcercaDe = new JMenuItem("El creador");
+       miAcercaDe.setFont(new Font("Georgia", 1, 14));
+       miAcercaDe.setForeground(new Color(0,0,0));
+       acercaDe.add(miAcercaDe);
+       miAcercaDe.addActionListener(this);
+
+       salir = new JMenuItem("Salir");
+       salir.setFont(new Font("Georgia",1,14));
+       salir.setForeground(new Color(0,0,0));
+       opciones.add(salir);
+       salir.addActionListener(this);
+
        oro= new JTextField("Tu oro: " + Jugador.monedasOro);
-       oro.setBounds(500,10,80,30);
+       oro.setBounds(475,10,100,30);
        oro.setBackground(new Color(0,255,255));
        oro.setForeground(new Color(0,0,0));
        oro.setEditable(false);
        add(oro);
        puntaje= new JTextField("Puntos: " + Jugador.puntos);
-       puntaje.setBounds(600,10,80,30);
+       puntaje.setBounds(600,10,100,30);
        puntaje.setBackground(new Color(255,0,0));
        puntaje.setForeground(new Color(255,255,255));
        puntaje.setEditable(false);
        add(puntaje);
-      
+
+       tuVida = new JLabel("Vida: " + Jugador.vida);
+       tuVida.setBounds(725,10,200,30);
+       tuVida.setFont(new Font("Castellar",1,18));
+       tuVida.setForeground(new Color(0,0,0));
+       add(tuVida);
+
+       tiempoPartida=new JLabel("");
+       tiempoPartida.setBounds(860,10,100,30 );
+       tiempoPartida.setFont(new Font("Showcard Gothic", 0,18));
+       tiempoPartida.setForeground(new Color(0,0,0));
+       add(tiempoPartida);
+
+       TiempoPartida tmp = new TiempoPartida(tiempoPartida);
+       hiloTiempo = new Thread(tmp);
+       hiloTiempo.start();
+
+        tmv = new TiempoVida(tuVida, aceptarAgua, aceptarSiembra, aceptarCosechar, AceptarCriarAnimal,
+        aceptarAnimal, aceptarFuncionEnCasa, aceptarSemillas, aceptarVenta, comprarComidaAnimal,
+       comprarFertilizante, aceptarCompraCrias, hiloTiempo);
+       tiempoVida[contadorHilos]=new Thread(tmv);
+       tiempoVida[contadorHilos].start();
+
+       bienvenido = new JLabel("Bienvenido: " + Jugador.nombreenjuego);
+       bienvenido.setBounds(560,90,500,50);
+       bienvenido.setFont(new Font("Stencil",3,30));
+       bienvenido.setForeground(new Color(255,0,0));
+       add(bienvenido);
+
+       granjer = new JLabel(new ImageIcon("images/Granjero.jpg"));
+       granjer.setBounds(600,150,316,288);
+       add(granjer);
+
+       fondo=new JLabel(new ImageIcon("images/fondo.jpg"));
+       fondo.setBounds(2,0,1350,660);
+       add(fondo);
+
+
 
     }
 //Eventos para los botones
@@ -820,12 +982,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
         tipplanta = tipoPlanta.getSelectedItem().toString();
         tipplanta1 =tipoPlanta.getSelectedItem().toString();
 
-        //hilos de periodo de comida de las vacas
+        //hilos de periodo de comida de las vacas y gallinas
             CriarVacas criarvacas = new CriarVacas(criandoVacas, vacasCriando);
             Thread hiloVacas = new Thread(criarvacas);
 
             CriarGallinas criargallinas = new CriarGallinas(criandoGallinas, pollosCreciendo);
             Thread hiloGallinas = new Thread(criargallinas);
+
         //
 
 
@@ -864,6 +1027,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                         pescados.setVisible(false);
                         Pesca.pecesCazados=Pesca.pecesCazados + Pesca.pecesEnAgua;
                         misPeces.setText("Peces: " + Pesca.pecesCazados);
+                        Reportes.pecesGranja = Reportes.pecesGranja+Pesca.pecesEnAgua;
+                        Reportes.peces1.setText("Peces: " + Reportes.pecesGranja);
                         hilo1.start();
                     }else if(bote.getText().equals("Tu bote: " + barco2)){
                         pescados.setVisible(false);
@@ -912,6 +1077,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Jugador.maiz =Jugador.maiz+ cantidadSemillas;
                     semMaiz.setText("sem. maiz: " + Jugador.maiz);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
+                    Reportes.semmill = Reportes.semmill + cantidadSemillas;
+                    Reportes.semT.setText(""+Reportes.semmill);
                 }
             }else if(opSeleccionada.equals("Semillas de Manzano")){
                 double cantidadOroxSemillasM = cantidadSemillas * 0.25;
@@ -922,6 +1089,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Jugador.manzanas = Jugador.manzanas + cantidadSemillas;
                     semManzana.setText("sem. manzana: " + Jugador.manzanas);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
+                    Reportes.semmill = Reportes.semmill + cantidadSemillas;
+                    Reportes.semT.setText(""+Reportes.semmill);
                 }
             }
     //para comprar fertilizantes para terreno
@@ -978,6 +1147,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     misPeces.setText("Peces: " + Pesca.pecesCazados);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
 			}else if(seleccionVenta.equals("Maiz (Quintales)")){
                 if(Cosecha.maizquintales<cantProducto){
@@ -991,6 +1162,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     maiz.setText("maiz(qq): " + Cosecha.maizquintales);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
 			}else if(seleccionVenta.equals("manzanas (quintales)")){
                 if(Cosecha1.manzanasquintales<cantProducto){
@@ -1004,6 +1177,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     manzanasqq.setText("manzanas(qq): " + Cosecha1.manzanasquintales);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }
             else if(seleccionVenta.equals("Gallinas")){
@@ -1012,10 +1187,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                 }else{
                     Jugador.gallinasVender = Jugador.gallinasVender - cantProducto;
                     gallinas.setText("Gallinas: " + Jugador.gallinasVender);
+                    oroPorVenta=(cantProducto*30);
                     Jugador.monedasOro = Jugador.monedasOro + (cantProducto*30);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos = Jugador.puntos + ((cantProducto*30)/15);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Vacas")){
                 if(Jugador.vacasVender<cantProducto){
@@ -1023,10 +1201,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                 }else{
                     Jugador.vacasVender = Jugador.vacasVender - cantProducto;
                     vacas.setText("Vacas: " + Jugador.vacasVender);
+                    oroPorVenta =(cantProducto*300);
                     Jugador.monedasOro = Jugador.monedasOro + (cantProducto*300);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos = Jugador.puntos + (cantProducto*8);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Leche (lt)")){
                 if(Jugador.lecheVaca<cantProducto){
@@ -1039,6 +1220,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos=Jugador.puntos + cantProducto*1;
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Huevos (u)")){
                 if(Jugador.huevosGallina<cantProducto){
@@ -1052,6 +1235,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos = Jugador.puntos + cantProducto*0.5;
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Cuero Vacas (u)")){
                 if(Jugador.cueroVaca<cantProducto){
@@ -1064,6 +1249,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos = Jugador.puntos + (cantProducto*10);
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Carne Vaca (qq)")){
                 if(Jugador.carneVaca<cantProducto){
@@ -1076,6 +1263,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos = Jugador.puntos + cantProducto*5;
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }else if(seleccionVenta.equals("Carne gallina(lb)")){
                 if(Jugador.carneGallina<cantProducto){
@@ -1089,6 +1278,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     oro.setText("Tu oro: " + Jugador.monedasOro);
                     Jugador.puntos=Jugador.puntos + cantProducto*3;
                     puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.oroG = Reportes.oroG + oroPorVenta;
+                    Reportes.oroGranja.setText(""+Reportes.oroG);
                 }
             }
     //para sembrar plantas
@@ -1123,10 +1314,13 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                 if(Cosecha.cosechaMaiz<=0){
                     JOptionPane.showMessageDialog(null, "No hay maiz suficiente para cosechar, asegurese de haber plantado");
                 }else{
-                    maizCosechado.setVisible(false);
                     Cosecha.maizquintales = (Cosecha.maizquintales+ (Cosecha.cosechaMaiz))+ (Cosecha.aumentoMaiz*(Cosecha.cosechaMaiz*celdamaiz));
                     Cosecha.maizquintales = Math.round(Cosecha.maizquintales*100.0)/100.0;
+                    maizCosechado.setVisible(false);
                     maiz.setText("maiz(qq): " + Cosecha.maizquintales);
+                    Reportes.maizGranja=(Reportes.maizGranja+Cosecha.cosechaMaiz)+(Cosecha.aumentoMaiz*Cosecha.cosechaMaiz*celdamaiz);
+                   Reportes.maizGranja=Math.round(Reportes.maizGranja*100.0)/100.0;
+                    Reportes.tortillas1.setText("maiz: " + Reportes.maizGranja);
                     celdamaiz=0;
                     celdaSembrarMaiz = celdamaiz;
                     Cosecha.cosechaMaiz=0;
@@ -1145,6 +1339,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Cosecha1.manzanasquintales = (Cosecha1.manzanasquintales + (Cosecha1.cosechaManzana)) + (Cosecha1.aumentoManzanas*(Cosecha1.cosechaManzana*celdamanzana));
                     Cosecha1.manzanasquintales = Math.round(Cosecha1.manzanasquintales*100.0)/100.0;
                     manzanasqq.setText("manzanas(qq): " + Cosecha1.manzanasquintales);
+                    Reportes.manzanasGranja=(Reportes.manzanasGranja + (Cosecha1.cosechaManzana)) + (Cosecha1.aumentoManzanas*(Cosecha1.cosechaManzana*celdamanzana));
+                    Reportes.manzanas1.setText("mnz: " + Reportes.manzanasGranja);
                     Cosecha1.cosechaManzana=0;
                     vidaManzanas++;
                     hilosembrar2.start();
@@ -1214,6 +1410,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             maizPlantado.setVisible(true);
                             Jugador.maiz = Jugador.maiz - (cantidadplantassembrar*2);
                             semMaiz.setText("sem. maiz: " + Jugador.maiz);
+                            Reportes.cantCeldas=Reportes.cantCeldas+celdamaiz;
+                            Reportes.celdasT.setText(""+Reportes.cantCeldas);
                             hilosembrar1.start();
                             aceptarSiembra.setEnabled(false);
                             contadorLimpieza++;
@@ -1224,6 +1422,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                         maizPlantado.setVisible(true);
                         Jugador.maiz = Jugador.maiz - (cantidadplantassembrar*2);
                         semMaiz.setText("sem. maiz: " + Jugador.maiz);
+                        Reportes.cantCeldas=Reportes.cantCeldas+celdamaiz;
+                        Reportes.celdasT.setText(""+Reportes.cantCeldas);
                         hilosembrar1.start();
                         aceptarSiembra.setEnabled(false); 
                         contadorLimpieza++;
@@ -1242,6 +1442,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             JOptionPane.showMessageDialog(null, "No puedes sembrar esta cantidad de plantas de manzanas en la celda(s), siembra una cantidad menos o utiliza mas celdas");
                         }else{
                             JOptionPane.showMessageDialog(null, "Dependiendo si has sembrado maiz o no, la cantidad de celdas seran las que no estan ocupadas, no el numero que elijas");
+                            Reportes.cantCeldas=Reportes.cantCeldas+celdamanzana;
+                            Reportes.celdasT.setText(""+Reportes.cantCeldas);
                             manzanasPlantado.setVisible(true);
                             Jugador.manzanas = Jugador.manzanas - (cantidadplantassembrar*3);
                             semManzana.setText("sem. manzanas: " + Jugador.manzanas);
@@ -1254,6 +1456,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                         manzanasPlantado.setVisible(true);
                         Jugador.manzanas = Jugador.manzanas - (cantidadplantassembrar*3);
                         semManzana.setText("sem. manzanas: " + Jugador.manzanas);
+                        Reportes.cantCeldas=Reportes.cantCeldas+celdamanzana;
+                        Reportes.celdasT.setText(""+Reportes.cantCeldas);
                         hilosembrar2.start();
                         aceptarSiembra.setEnabled(false);
                         contadorLimpieza++;
@@ -1274,6 +1478,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Jugador.criasDeGallinas = Jugador.criasDeGallinas + (criasCantidad);
                     criasGallinas.setText("Crias Gallinas: " + Jugador.criasDeGallinas);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
+                    Reportes.criasTT = Reportes.criasTT + criasCantidad;
+                    Reportes.criasT.setText(""+Reportes.criasTT);
 
                 }
             }else if(tipodeCria.equals("Vacas")){
@@ -1285,6 +1491,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     Jugador.criasDeVacas = Jugador.criasDeVacas + criasCantidad;
                     criasVacas.setText("Crias Vacas: " + Jugador.criasDeVacas);
                     oro.setText("Tu oro: " + Jugador.monedasOro);
+                    Reportes.criasTT = Reportes.criasTT + criasCantidad;
+                    Reportes.criasT.setText(""+Reportes.criasTT);
                 }
             }
     //para elegir alimento para los animales.
@@ -1444,6 +1652,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int lechelitros = (int)(Math.random()*2+1);
                             Jugador.lecheVaca = Jugador.lecheVaca + ((1)+CriarVacas.cantidadVacasCriando*lechelitros);
                             lechelt.setText("leche (lt): " + Jugador.lecheVaca);
+                            Reportes.lecheGranja=Reportes.lecheGranja+((1)+CriarVacas.cantidadVacasCriando*lechelitros);
+                            Reportes.leche1.setText("leche(lt): " + Reportes.lecheGranja);
                             CriarVacas.hilovacaAlimento.stop();
                             hiloVacas.start();
                         }
@@ -1467,6 +1677,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int lechelitros = (int)(Math.random()*2+1);
                             Jugador.lecheVaca = Jugador.lecheVaca + ((2)+CriarVacas.cantidadVacasCriando*lechelitros);
                             lechelt.setText("leche (lt): " + Jugador.lecheVaca);
+                            Reportes.lecheGranja=Reportes.lecheGranja+((2)+CriarVacas.cantidadVacasCriando*lechelitros);
+                            Reportes.leche1.setText("leche(lt): " + Reportes.lecheGranja);
                             CriarVacas.hilovacaAlimento.stop();
                             hiloVacas.start();
                         }
@@ -1490,6 +1702,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int lechelitros = (int)(Math.random()*2+1);
                             Jugador.lecheVaca = Jugador.lecheVaca + ((0.5)+CriarVacas.cantidadVacasCriando*lechelitros);
                             lechelt.setText("leche (lt): " + Jugador.lecheVaca);
+                            Reportes.lecheGranja=Reportes.lecheGranja+((0.5)+CriarVacas.cantidadVacasCriando*lechelitros);
+                            Reportes.leche1.setText("leche(lt): " + Reportes.lecheGranja);
                             CriarVacas.hilovacaAlimento.stop();
                             hiloVacas.start();
                         }
@@ -1514,6 +1728,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int huevos =(int) (Math.random()*4+1);
                             Jugador.huevosGallina = Jugador.huevosGallina + (CriarGallinas.cantidadGallinasCriando*huevos+1);
                             huevosU.setText("Huevos(u): " + Jugador.huevosGallina);
+                            Reportes.huevosGranja = Reportes.huevosGranja+ (CriarGallinas.cantidadGallinasCriando*huevos+1);
+                            Reportes.huevos1.setText("huevos: " + Reportes.huevosGranja);
                             CriarGallinas.tiempocomidaGallina.stop();
                             hiloGallinas.start();
                         }
@@ -1535,6 +1751,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int huevos =(int) (Math.random()*5+1);
                             Jugador.huevosGallina = Jugador.huevosGallina + (2 + (CriarGallinas.cantidadGallinasCriando*huevos));
                             huevosU.setText("Huevos(u): " + Jugador.huevosGallina);
+                            Reportes.huevosGranja = Reportes.huevosGranja+  (2 + (CriarGallinas.cantidadGallinasCriando*huevos));
+                            Reportes.huevos1.setText("huevos: " + Reportes.huevosGranja);
                             CriarGallinas.tiempocomidaGallina.stop();
                             hiloGallinas.start();
                         }
@@ -1556,6 +1774,8 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                             int huevos =(int) (Math.random()*6+1);
                             Jugador.huevosGallina = Jugador.huevosGallina + (CriarGallinas.cantidadGallinasCriando*huevos+3);
                             huevosU.setText("Huevos(u): " + Jugador.huevosGallina);
+                            Reportes.huevosGranja = Reportes.huevosGranja+  (CriarGallinas.cantidadGallinasCriando*huevos+3);
+                            Reportes.huevos1.setText("huevos: " + Reportes.huevosGranja);
                             CriarGallinas.tiempocomidaGallina.stop();
                             hiloGallinas.start();
                         }
@@ -1620,7 +1840,255 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
                     }
                 }
             }
+    // para trabajos en la casa o en la granja 
+        }else if(e.getSource()==comboFuncionCasa){
+            String funncionCasa = comboFuncionCasa.getSelectedItem().toString();
+            if(funncionCasa.equals("Comer (Granjero)")){
+                comboAlimentoGrangero.setVisible(true);
+            }else if(funncionCasa.equals("Destazar Vaca")){
+                comboAlimentoGrangero.setVisible(false);
+            }else if(funncionCasa.equals("Destazar Gallina")){
+                comboAlimentoGrangero.setVisible(false);
+            }
         }
+        else if(e.getSource()==aceptarFuncionEnCasa){
+            String tipoComida = comboAlimentoGrangero.getSelectedItem().toString();
+            String seleccion = comboFuncionCasa.getSelectedItem().toString();
+            if(seleccion.equals("Destazar Vaca")){
+                String cantFuncion = cantidadAlimentoGrangero.getText();
+                double cantidadFuncion = Double.parseDouble(cantFuncion);
+                if(Jugador.vacasVender<cantidadFuncion){
+                    JOptionPane.showMessageDialog(null, "No tienes esta cantidad de vacas");
+                }else{
+                    Jugador.vacasVender = Jugador.vacasVender - cantidadFuncion;
+                    vacas.setText("Vacas: " + Jugador.vacasVender);
+                    Jugador.carneVaca = Jugador.carneVaca + (cantidadFuncion*5);
+                    carneDeVaca.setText("Carne de Vaca(qq): " + Jugador.carneVaca);
+                    Jugador.cueroVaca = Jugador.cueroVaca  + (cantidadFuncion);
+                    cueroVaca.setText("cuero de vaca(u): " + Jugador.cueroVaca);
+                    Jugador.puntos = Jugador.puntos + (cantidadFuncion*1.5);
+                    puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.destazz = Reportes.destazz + cantidadFuncion;
+                    Reportes.aDestazados.setText(""+Reportes.destazz);
+                    Reportes.carneGranja = Reportes.carneGranja+(cantidadFuncion*5);
+                    Reportes.carne1.setText("carne: "+ Reportes.carneGranja);
+                }
+            }else if(seleccion.equals("Destazar Gallina")){
+                String cantFuncion = cantidadAlimentoGrangero.getText();
+                double cantidadFuncion = Double.parseDouble(cantFuncion);
+                if(Jugador.gallinasVender<cantidadFuncion){
+                    JOptionPane.showMessageDialog(null, "No tienes esta cantidad de gallinas!");
+                }else{
+                    Jugador.gallinasVender=Jugador.gallinasVender - cantidadFuncion;
+                    gallinas.setText("Gallinas: " + Jugador.gallinasVender);
+                    Jugador.carneGallina=Jugador.carneGallina + (cantidadFuncion*6);
+                    carneDeGallina.setText("Carne Gallina(lb): " + Jugador.carneGallina);
+                    Jugador.puntos = Jugador.puntos + (cantidadFuncion*1);
+                    puntaje.setText("Puntos: " + Jugador.puntos);
+                    Reportes.destazz = Reportes.destazz + cantidadFuncion;
+                    Reportes.aDestazados.setText(""+Reportes.destazz);
+                    Reportes.carneGranja = Reportes.carneGranja+(cantidadFuncion*0.06);
+                    Reportes.carneGranja = Math.round(Reportes.carneGranja*100.0)/100.0;
+                    Reportes.carne1.setText("carne: "+ Reportes.carneGranja);
+                }
+    //para alimentar al granjero
+            }else if(seleccion.equals("Comer (Granjero)")){
+                if(tipoComida.equals("Peces")){
+                    if(Pesca.pecesCazados<1){
+                        JOptionPane.showMessageDialog(null, "No tienes suficintes peces para alimentar al Grangero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Pesca.pecesCazados = Pesca.pecesCazados - 1;
+                        misPeces.setText("Peces: " + Pesca.pecesCazados);
+                        Jugador.vida = Jugador.vida + (40);
+                        Reportes.pecesG=Reportes.pecesG + 1;
+                        Reportes.peces.setText("peces: " + Reportes.pecesG);
+                        tiempoVida[contadorHilos].start();
+                    }
+                }else if(tipoComida.equals("Tortillas")){
+                    if(Cosecha.maizquintales<0.05){
+                        JOptionPane.showMessageDialog(null, "No tienes maiz para que coma tortillas");
+                    }else{
+                            tiempoVida[contadorHilos].stop();
+                            contadorHilos++;
+                            tiempoVida[contadorHilos]=new Thread(tmv);
+                            Cosecha.maizquintales = Math.round((Cosecha.maizquintales - (0.05))*100.0)/100.0;
+                            maiz.setText("maiz(qq): " + Cosecha.maizquintales);
+                            Jugador.vida = Jugador.vida + (20);
+                            Reportes.maizG = Reportes.maizG + Math.round(((0.05))*100.0)/100.0;
+                            Reportes.tortillas.setText("maiz: " + Reportes.maizG);
+                            tiempoVida[contadorHilos].start();
+                    }
+                }else if(tipoComida.equals("Carne Vaca")){
+                    if(Jugador.carneVaca<0.01){
+                        JOptionPane.showMessageDialog(null, "No tienes esta cantidad de carne para alimentar al granjero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Jugador.carneVaca = Math.round((Jugador.carneVaca-0.01)*100.0)/100.0;
+                        carneDeVaca.setText("Carne Vaca(qq): " + Jugador.carneVaca);
+                        Reportes.carneG=Reportes.carneG + Math.round((0.01)*100)/100.0;
+                        Reportes.carne.setText("carne: " + Reportes.carneG);
+                        Jugador.vida = Jugador.vida + (50);
+                        tiempoVida[contadorHilos].start();
+                        
+                    }
+                }else if(tipoComida.equals("Carne Gallina")){
+                    if(Jugador.carneGallina<0.02){
+                        JOptionPane.showMessageDialog(null, "No tienes suficiente carne para alimentar al granjero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Jugador.carneGallina =Math.round((Jugador.carneGallina - 0.02)*100)/100.0;
+                        carneDeGallina.setText("Carne Gallina(lb): "  + Jugador.carneGallina);
+                        Reportes.carneG=Reportes.carneG + Math.round((0.02)*100)/100.0;
+                        Reportes.carne.setText("carne: " + Reportes.carneG);
+                        Jugador.vida = Jugador.vida + (45);
+                        tiempoVida[contadorHilos].start();    
+                    }
+                }else if(tipoComida.equals("Manzanas")){
+                    if(Cosecha1.manzanasquintales<0.02){
+                        JOptionPane.showMessageDialog(null, "No tienes suficientes manzanas para alimentar al granjero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Cosecha1.manzanasquintales=Math.round((Cosecha1.manzanasquintales-0.02)*100.0)/100.0;
+                        manzanasqq.setText("Manzanas: " + Cosecha1.manzanasquintales);
+                        Reportes.manzanasG = Math.round((Reportes.manzanasG+0.02)*100.0)/100.0;
+                        Reportes.manzanas.setText("Mnz(u): "+ Reportes.manzanasG);
+                        Jugador.vida = Jugador.vida + (10);
+                        tiempoVida[contadorHilos].start();
+                    }
+                }else if(tipoComida.equals("Leche")){
+                    if(Jugador.lecheVaca<1){
+                        JOptionPane.showMessageDialog(null, "No tienes suficiente leche para alimentar al granjero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Jugador.lecheVaca = Jugador.lecheVaca -1;
+                        lechelt.setText("Leche(lt): " + Jugador.lecheVaca);
+                        Reportes.lecheG=Reportes.lecheG + 1;
+                        Reportes.leche.setText("leche(lt): " + Reportes.lecheG);
+                        Jugador.vida = Jugador.vida + (30);
+                        tiempoVida[contadorHilos].start();
+                    }
+                }else if(tipoComida.equals("Huevos")){
+                    if(Jugador.huevosGallina<3){
+                        JOptionPane.showMessageDialog(null, "No tienes en la bodega huevos de gallinas para alimentar al granjero");
+                    }else{
+                        tiempoVida[contadorHilos].stop();
+                        contadorHilos++;
+                        tiempoVida[contadorHilos]=new Thread(tmv);
+                        Jugador.huevosGallina=Jugador.huevosGallina-3;
+                        huevosU.setText("Huevos(u): " + Jugador.huevosGallina);
+                        Reportes.huevosG=Reportes.huevosG+3;
+                        Reportes.huevos.setText("huevos(u): " + Reportes.huevosG);
+                        Jugador.vida = Jugador.vida + (37);
+                        tiempoVida[contadorHilos].start();   
+                    }
+                }
+            }
+    //para la parte de la barra
+        }
+        else if(e.getSource()==miAcercaDe){
+            JOptionPane.showMessageDialog(null, "Desarrollado por Eiler Rigoberto Gomez Figueroa\n" +
+                                            "           gomezeiler250@gmail.com\n " +
+                                            "    Proyecto de IPC1 Ingenieia en Ciencias y Sistemas\n" +
+                                            "                 12/04/2021");
+        }if(e.getSource()==miRojo){
+            getContentPane().setBackground(new Color(255,0,0));
+         }
+         if(e.getSource()==miNegro){
+            getContentPane().setBackground(new Color(0,0,0));
+         }
+         if(e.getSource()==miMorado){
+            getContentPane().setBackground(new Color(51,0,51));
+         }if(e.getSource()==miAzul){
+             getContentPane().setBackground(new Color(62,95,138));
+         }
+         else if(e.getSource()==miReportes){
+             TerminosYCondiciones.rp.setVisible(true);
+         }else if(e.getSource()==miNuveaPartida){
+            NuevaPartida np = new NuevaPartida();
+            np.setBounds(0,0,500,350);
+            np.setVisible(true);
+            np.setResizable(false);
+            np.setLocationRelativeTo(null);
+            this.setVisible(false);
+            tiempoVida[contadorHilos].stop();
+            Jugador.vida=100;
+            Jugador.maiz=0;
+            Jugador.manzanas=0;
+            Jugador.criasDeVacas=0;
+            Jugador.criasDeGallinas=0;
+            Jugador.gallinasVender=0;
+            Jugador.vacasVender=0;
+            Jugador.afrecho=0; 
+            Jugador.trigo=0;
+            Jugador.pasto=0;
+            Jugador.lecheVaca=0;
+            Jugador.cueroVaca=0;
+            Jugador.carneVaca=0;
+            Jugador.carneGallina=0;
+            Jugador.huevosGallina=0;
+            Cosecha.maizquintales=0;
+            Cosecha.cosechaMaiz=0;
+            Cosecha.aumentoMaiz=0;
+
+            Cosecha1.manzanasquintales=0;
+            Cosecha1.cosechaManzana=0;
+            Cosecha1.aumentoManzanas=0;
+
+            Pesca.pecesEnAgua=0;
+            Pesca.pecesCazados=0;
+
+            Reportes.oroG =0;
+            Reportes.oroGranja.setText(""+Reportes.oroG);
+            Reportes.destazz =0;
+            Reportes.aDestazados.setText(""+ Reportes.destazz);
+            Reportes.pecesGranja = 0;
+            Reportes.peces1.setText("peces: "+ Reportes.pecesGranja);
+            Reportes.maizGranja =0;
+            Reportes.tortillas1.setText("maiz: "+Reportes.maizGranja);
+            Reportes.lecheGranja=0;
+            Reportes.leche1.setText("leche(lt): "+ Reportes.lecheGranja);
+            Reportes.manzanasGranja =0;
+            Reportes.manzanas1.setText("Mnz(qq): " +Reportes.manzanasGranja);
+            Reportes.huevosGranja=0;
+            Reportes.huevos1.setText("huevos: " + Reportes.huevosGranja);
+            Reportes.carneGranja=0;
+            Reportes.carne1.setText("carne: " + Reportes.carneGranja);
+            Reportes.pecesG=0;
+            Reportes.peces.setText(""+Reportes.pecesG);
+            Reportes.maizG=0;
+            Reportes.tortillas.setText(""+Reportes.maizG);
+            Reportes.lecheG=0;
+            Reportes.leche.setText(""+ Reportes.lecheG);
+            Reportes.manzanasG=0;
+            Reportes.manzanas.setText(""+ Reportes.manzanasG);
+            Reportes.huevosG=0;
+            Reportes.huevos.setText(""+Reportes.huevosG);
+            Reportes.carneG=0;
+            Reportes.carne.setText(""+Reportes.carneG);
+
+            this.hiloTiempo.stop();
+
+            Reportes.numPartidas[Reportes.contadorPatidas]="Partida: " + Reportes.contadorPatidas +"; Tiempo: " + TiempoPartida.tiempoPartida + "(segundos)";
+            Reportes.txtArea.setText(Reportes.txtArea.getText()+"\n"+Reportes.numPartidas[Reportes.contadorPatidas]);
+            TiempoPartida.tiempoPartida=0;
+            Reportes.contadorPatidas++;
+
+            contadorHilos=0;
+            tiempoVida[contadorHilos].start();
+         }else if(e.getSource()==salir){
+             System.exit(0);
+         }
     }
     
 //main

@@ -15,16 +15,16 @@ public class CriarGallinas extends Thread{
     public void run(){
         alimentogallina = new TiempoAlimento1(criandoGallinas, pollosCreciendo);
         tiempocomidaGallina = new Thread(alimentogallina);
-        for(int i=0; i<=40; i++){
+        for(int i=0; i<=60; i++){
             contador++;
             criandoGallinas.setText("Gallinas creciendo: " + contador);
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (Exception e) {
                System.out.println("Error en el hilo de gallinas creciendo " + e);
             } 
         }
-        if(contador>40){
+        if(contador>60){
             tiempocomidaGallina.start();
             JOptionPane.showMessageDialog(null, "Hora de alimentar a las gallinas");
             criandoGallinas.setText("");
