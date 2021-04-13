@@ -4,7 +4,7 @@ public class Jugador{
     public static String nombre="";
     public static String nombreenjuego="";
     public static double vida=100;
-    public static double monedasOro=1000;
+    public static double monedasOro=100;
     public static double puntos=0; 
     public static double maiz;
     public static double manzanas;

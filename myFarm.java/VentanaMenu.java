@@ -2027,6 +2027,7 @@ public class VentanaMenu extends JFrame implements ActionListener, Runnable{
             np.setLocationRelativeTo(null);
             this.setVisible(false);
             tiempoVida[contadorHilos].stop();
+            Jugador.monedasOro=100;
             Jugador.vida=100;
             Jugador.maiz=0;
             Jugador.manzanas=0;
